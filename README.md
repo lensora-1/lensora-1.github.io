@@ -1,26 +1,27 @@
 # LENSORA
 
-Bilingual Arabic/English creative portfolio platform for photographers, videographers, editors, and visual designers.
+The complete LENSORA browser interface is published on GitHub Pages:
 
-## Live application
+https://lensora-1.github.io
 
-The fully functional application remains hosted on Cloudflare Workers:
-https://lensora-platform.m7njordan.workers.dev
+## Application architecture
 
-## Repository layout
+- GitHub Pages serves the static LENSORA interface.
+- The existing Cloudflare Worker remains the API runtime.
+- Cloudflare D1 remains the account/profile database.
+- Cloudflare R2 remains the portfolio media store.
 
-- `index.html` — GitHub Pages entry page linking visitors to the live application.
-- `worker.js` — source mirror of the Cloudflare Worker application and API.
-- `.nojekyll` — disables the default Jekyll processing for this static publishing repository.
+The frontend sends API and media requests to the Cloudflare Worker. GitHub Pages cannot run Worker code or host D1/R2 bindings.
 
-## Important architecture note
+## Important deployment note
 
-GitHub Pages serves static files only. It does not execute the Cloudflare Worker, access its D1 database, or serve R2 media. Authentication, profiles, uploads, and API routes therefore continue to run on the existing Cloudflare Worker origin. The Pages entry page directs visitors to that live application rather than pretending the backend has moved.
+Cross-origin authentication from a `github.io` page to a `workers.dev` API requires exact-origin CORS and credential configuration. Browser third-party-cookie restrictions may still prevent reliable persistent login on some devices. Do not assume registration, login, profile editing, or uploads are production-ready on the GitHub Pages hostname until these flows have been tested in real browsers.
 
-## Cloudflare infrastructure
+## Files
 
-- Runtime: Cloudflare Workers
-- Database: Cloudflare D1
-- Media: Cloudflare R2
+- `index.html` — complete LENSORA frontend.
+- `404.html` — fallback for direct profile and nested app routes on GitHub Pages.
+- `worker.js` — source mirror of the Cloudflare Worker.
+- `.nojekyll` — disables Jekyll processing.
 
-Do not publish secrets, passwords, session keys, or private environment variables in this repository.
+Never commit Cloudflare secrets, passwords, session keys, or private environment variables to this repository.
